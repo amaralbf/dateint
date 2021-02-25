@@ -1,0 +1,55 @@
+[tool.poetry]
+name = "dateint"
+version = "0.1.0"
+description = ""
+authors = ["Bruno Amaral <amaralbf@gmail.com>"]
+license = "MIT"
+packages = [
+    { include = "dateint", from = "src" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+
+[tool.poetry.dev-dependencies]
+pre-commit = "^2.10.1"
+
+# formatting
+black = "^20.8b1"
+isort = "^5.7.0"
+
+# linting
+flake8 = "^3.8.4"
+
+# testing
+pytest = "^6.2.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+include = '\.pyi?$'
+skip-string-normalization = true
+
+[tool.isort]
+ensure_newline_before_comments = true
+force_grid_wrap = 0
+include_trailing_comma = true
+line_length = 88
+multi_line_output = 3
+use_parentheses = true

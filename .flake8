@@ -1,0 +1,17 @@
+[flake8]
+max-line-length = 88
+extend-ignore = E203
+per-file-ignores =
+    __init__.py:F401
+exclude =
+    .git
+    __pycache__
+    setup.py
+    build
+    dist
+    releases
+    .venv
+    .tox
+    .mypy_cache
+    .pytest_cache
+    .vscode
