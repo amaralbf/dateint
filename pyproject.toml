@@ -23,6 +23,7 @@ flake8 = "^3.8.4"
 
 # testing
 pytest = "^6.2.2"
+mypy = "^0.812"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
