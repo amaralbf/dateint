@@ -4,9 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["Bruno Amaral <amaralbf@gmail.com>"]
 license = "MIT"
-packages = [
-    { include = "dateint", from = "src" },
-]
+packages = [{ include = "dateint"}]
 
 [tool.poetry.dependencies]
 python = "^3.7"
