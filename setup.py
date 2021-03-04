@@ -8,5 +8,5 @@ setup(
     author='Bruno Amaral',
     author_email='amaralbf@gmail.com',
     packages=['dateint'],
-    python_requires='>=3.7,<4.0',
+    python_requires='>=3.6,<4.0',
 )
