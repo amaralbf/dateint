@@ -22,6 +22,7 @@ flake8 = "^3.8.4"
 # testing
 pytest = "^6.2.2"
 mypy = "^0.812"
+coverage = {extras = ["toml"], version = "^5.5"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -44,6 +45,10 @@ exclude = '''
 '''
 include = '\.pyi?$'
 skip-string-normalization = true
+
+[tool.coverage.run]
+command_line = "-m pytest"
+source = ["dateint"]
 
 [tool.isort]
 ensure_newline_before_comments = true
