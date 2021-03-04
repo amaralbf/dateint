@@ -1,6 +1,6 @@
 name: ci
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.7, 3.8]
+        python-version: [3.6, 3.7, 3.8, 3.9]
 
     steps:
     - uses: actions/checkout@v2
@@ -21,9 +21,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements-dev.txt
         pip install -e .
-    - name: Lint with flake8
+    - name: Pre-commit hooks
+      uses: pre-commit/action@v2.0.0
+    - name: Lint with mypy
       run: |
-        flake8 .
+        mypy -p dateint
     - name: Test with pytest
       run: |
         pytest
