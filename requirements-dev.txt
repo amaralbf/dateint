@@ -1,0 +1,13 @@
+pre-commit>=2.10.1
+
+# formatting
+black==20.8b1
+isort>=5.7.0
+
+# linting
+flake8>=3.8.4
+
+# testing
+pytest>=6.2.2
+mypy>=0.812
+coverage[toml]>=5.5
