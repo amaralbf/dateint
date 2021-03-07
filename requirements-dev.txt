@@ -6,8 +6,8 @@ isort>=5.7.0
 
 # linting
 flake8>=3.8.4
+mypy>=0.812
 
 # testing
 pytest>=6.2.2
-mypy>=0.812
 coverage[toml]>=5.5
