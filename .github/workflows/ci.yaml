@@ -10,6 +10,10 @@ jobs:
       matrix:
         python-version: [3.6, 3.7, 3.8, 3.9]
 
+    env:
+      OS: ${{ matrix.os }}
+      PYTHON: ${{ matrix.python-version }}
+
     steps:
     - uses: actions/checkout@v2
 
@@ -25,3 +29,15 @@ jobs:
 
     - name: Run Tox
       run: tox -e py
+
+    - name: Generate xml coverage report
+      run: coverage xml
+
+    - name: Upload coverage report to codecov
+      uses: codecov/codecov-action@v1
+      with:
+        files: ./coverage.xml
+        env_vars: OS,PYTHON
+        name: codecov-py${{ matrix.python-version }}
+        fail_ci_if_error: true
+        verbose: true
