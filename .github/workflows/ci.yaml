@@ -46,7 +46,7 @@ jobs:
         env_vars: OS,PYTHON
         name: codecov-py${{ matrix.python-version }}
         fail_ci_if_error: true
-        verbose: true
+        verbose: false
 
   run_tests_on_other_py_versions:
     runs-on: ubuntu-latest
