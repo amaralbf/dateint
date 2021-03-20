@@ -3,12 +3,11 @@ name: ci
 on: [push, pull_request]
 
 jobs:
-  build:
-
+  ci:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.7]
 
     env:
       OS: ${{ matrix.os }}
@@ -22,13 +21,20 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install tox
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install tox
+        pip install -r requirements-dev.txt
+        pip install -e .
 
-    - name: Run Tox
-      run: tox -e py
+    - name: Pre-commit hooks
+      uses: pre-commit/action@v2.0.0
+
+    - name: Run mypy
+      run: mypy -p dateint
+
+    - name: Run tests and coverage
+      run: coverage run
 
     - name: Generate xml coverage report
       run: coverage xml
@@ -41,3 +47,25 @@ jobs:
         name: codecov-py${{ matrix.python-version }}
         fail_ci_if_error: true
         verbose: true
+
+  run_tests_on_other_py_versions:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.8, 3.9]
+    env:
+      OS: ${{ matrix.os }}
+      PYTHON: ${{ matrix.python-version }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements-dev.txt
+        pip install -e .
+    - name: Run tests
+      run: pytest

@@ -20,6 +20,9 @@ skip-string-normalization = true
 command_line = "-m pytest"
 source = ["dateint"]
 
+[tool.coverage.report]
+show_missing = true
+
 [tool.isort]
 ensure_newline_before_comments = true
 force_grid_wrap = 0
