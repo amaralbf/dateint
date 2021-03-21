@@ -8,5 +8,6 @@ setup(
     author='Bruno Amaral',
     author_email='amaralbf@gmail.com',
     packages=['dateint'],
+    install_requires=['python-dateutil>=2.7.3'],
     python_requires='>=3.6,<4.0',
 )
