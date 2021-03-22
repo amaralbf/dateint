@@ -21,6 +21,10 @@ def add_months(date: T, months: int) -> int:
     return date_int
 
 
+def sub_months(date: T, months: int) -> int:
+    return add_months(date, -months)
+
+
 def get_date_obj_and_format(date: T) -> Tuple[datetime.datetime, str]:
     if not isinstance(date, (int, str)):
         raise TypeError("'date' argument must be of type 'int' or 'str'")
@@ -41,7 +45,10 @@ def get_date_obj_and_format(date: T) -> Tuple[datetime.datetime, str]:
         except ValueError:
             pass
 
-    raise ValueError("expected one of the following formats for 'date': %Y%m or %Y%m%d")
+    raise ValueError(
+        "expected one of the following formats for 'date': '%Y%m' or '%Y%m%d' "
+        '(with %m and %d having 2 digits each)'
+    )
 
 
 def to_int(date: datetime.datetime, fmt: str) -> int:

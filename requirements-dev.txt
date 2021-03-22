@@ -11,4 +11,5 @@ mypy>=0.812
 # testing
 pytest>=6.2.2
 coverage[toml]>=5.5
+hypothesis>=6.8.1
 tox>=3.23.0

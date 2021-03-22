@@ -1,9 +1,11 @@
 import datetime
 
 import pytest
+from hypothesis import given
+from hypothesis import strategies as st
 
 import dateint as di
-from dateint.core import get_date_obj_and_format
+from dateint.core import get_date_obj_and_format, to_int
 
 
 def test_today():
@@ -65,3 +67,12 @@ def test_get_date_obj_and_format_with_invalid_value():
     # although single digit month/day is a valid format for datetime.datetime.strptime,
     # here, we only accept the '%Y%m%d' and '%Y%m' formats with double digits month/day
     pytest.raises(ValueError, get_date_obj_and_format, 202113)
+
+
+@given(st.dates(min_value=datetime.date(2000, 1, 1)), st.integers(-360, 360))
+def test_sub_months_equals_add_neg_months(date, months):
+    date_int = to_int(date=date, fmt='%Y%m%d')
+    assert di.sub_months(date_int, months) == di.add_months(date_int, -months)
+
+    date_int = to_int(date=date, fmt='%Y%m')
+    assert di.sub_months(date_int, months) == di.add_months(date_int, -months)
