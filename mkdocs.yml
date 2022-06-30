@@ -1,0 +1,21 @@
+site_name: dateint
+theme:
+  name: material
+markdown_extensions:
+  - admonition
+
+nav:
+  - Home: index.md
+  - API:
+    - dateint.core: api/core.md
+
+plugins:
+  - search
+  - mkdocstrings:
+      custom_templates: templates
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_root_toc_entry: false
+            show_source: false

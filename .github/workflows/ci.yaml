@@ -1,71 +1,69 @@
-name: ci
+---
+name: CI
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+      - 'releases/**'
 
 jobs:
-  ci:
-    runs-on: ubuntu-latest
+  tests:
+    name: "Python ${{ matrix.python-version }}"
+    runs-on: "ubuntu-latest"
+
     strategy:
       matrix:
-        python-version: [3.7]
-
-    env:
-      OS: ${{ matrix.os }}
-      PYTHON: ${{ matrix.python-version }}
+        python-version: ["3.7", " 3.8", " 3.9"]
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: "actions/checkout@v2"
+      - uses: "actions/setup-python@v2"
+        with:
+          python-version: "${{ matrix.python-version }}"
+      - name: "Install dependencies"
+        run: |
+          python -VV
+          python -m site
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install --upgrade coverage[toml] virtualenv tox tox-gh-actions
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements-dev.txt
-        pip install -e .
-
-    - name: Pre-commit hooks
-      uses: pre-commit/action@v2.0.0
-
-    - name: Run mypy
-      run: mypy -p dateint
-
-    - name: Run tests and coverage
-      run: coverage run
-
-    - name: Generate xml coverage report
-      run: coverage xml
-
-    - name: Upload coverage report to codecov
-      uses: codecov/codecov-action@v1
-      with:
-        files: ./coverage.xml
-        env_vars: OS,PYTHON
-        name: codecov-py${{ matrix.python-version }}
-        fail_ci_if_error: true
-        verbose: true
-
-  run_tests_on_other_py_versions:
+      - name: "Run tox targets for ${{ matrix.python-version }}"
+        run: "python -m tox"
+      - name: Upload coverage data
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-data
+          path: ".coverage.*"
+          if-no-files-found: ignore
+          retention-days: 1
+  coverage:
+    name: Combine & check coverage.
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.6, 3.8, 3.9]
-    env:
-      OS: ${{ matrix.os }}
-      PYTHON: ${{ matrix.python-version }}
+    needs: tests
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements-dev.txt
-        pip install -e .
-    - name: Run tests
-      run: pytest
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+
+      - run: python -m pip install --upgrade coverage[toml]
+
+      - name: Download coverage data.
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage-data
+
+      - name: Combine coverage.
+        run: |
+          python -m coverage combine
+          python -m coverage html --skip-covered --skip-empty
+          python -m coverage report
+
+      - name: Upload HTML report if check failed.
+        uses: actions/upload-artifact@v3
+        with:
+          name: html-report
+          path: htmlcov
+        if: ${{ failure() }}
