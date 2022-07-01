@@ -32,3 +32,20 @@ def weekday(date: Union[str, float, int]) -> int:
     date = str(int(date))
     dt_obj = datetime.datetime.strptime(date, '%Y%m%d')
     return dt_obj.weekday()
+
+
+def isoweekday(date: Union[str, float, int]) -> int:
+    """
+    Return day of week as returned by datetime.datetime.isoweekday() method.
+
+    Return the day of week as an integer, where Monday is 1 and Sunday is 7.
+
+    Args:
+        date (Union[str, float, int]): date formatted as %Y%m%d
+
+    Returns:
+        weekday (int): day of week (from 1 to 7)
+    """  # noqa: D402
+    date = str(int(date))
+    dt_obj = datetime.datetime.strptime(date, '%Y%m%d')
+    return dt_obj.isoweekday()
