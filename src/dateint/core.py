@@ -19,7 +19,7 @@ def today() -> int:
 
 def weekday(date: Union[str, float, int]) -> int:
     """
-    Return day of week as returned by datetime.datetime.strptime() method.
+    Return day of week as returned by datetime.datetime.weekday() method.
 
     Return the day of week as an integer, where Monday is 0 and Sunday is 6.
 
@@ -28,7 +28,7 @@ def weekday(date: Union[str, float, int]) -> int:
 
     Returns:
         weekday (int): day of week (from 0 to 6)
-    """
+    """  # noqa: D402
     date = str(int(date))
     dt_obj = datetime.datetime.strptime(date, '%Y%m%d')
     return dt_obj.weekday()
