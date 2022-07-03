@@ -3,13 +3,15 @@ import datetime
 import pytest
 
 import dateint as di
+from dateint.config import get_date_format
 
 
 def test_today():
     today_dt = datetime.date.today()
     today_int = di.today()
 
-    assert int(today_dt.strftime('%Y%m%d')) == today_int
+    fmt = get_date_format()
+    assert int(today_dt.strftime(fmt)) == today_int
 
 
 @pytest.mark.parametrize(
