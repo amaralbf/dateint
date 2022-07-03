@@ -44,3 +44,16 @@ def test_weekday(date, exp_weekday):
 )
 def test_isoweekday(date, exp_isoweekday):
     assert di.isoweekday(date) == exp_isoweekday
+
+
+@pytest.mark.parametrize(
+    ['date', 'months', 'exp_date'],
+    [
+        (202207, 5, 202212),
+        (20220702, 5, 20221202),
+        (20220731, 4, 20221130),
+        (20200229, 4, 20200629),
+    ],
+)
+def test_add_months(date, months, exp_date):
+    assert date + di.months(months) == exp_date

@@ -3,6 +3,11 @@
 import datetime
 from typing import Union
 
+from dateutil.relativedelta import relativedelta
+
+from .config import get_date_format
+from .convert import date_to_int, guess_format, parse_to_date
+
 
 def today() -> int:
     """
@@ -11,10 +16,7 @@ def today() -> int:
     Returns:
         today (int): Current date as an integer, formatted as %Y%m%d.
     """
-    today_dt = datetime.date.today()
-    today_int = int(today_dt.strftime('%Y%m%d'))
-
-    return today_int
+    return date_to_int(datetime.date.today(), fmt=get_date_format())
 
 
 def weekday(date: Union[str, float, int]) -> int:
@@ -29,8 +31,7 @@ def weekday(date: Union[str, float, int]) -> int:
     Returns:
         weekday (int): day of week (from 0 to 6)
     """  # noqa: D402
-    date = str(int(date))
-    dt_obj = datetime.datetime.strptime(date, '%Y%m%d')
+    dt_obj = parse_to_date(date, get_date_format())
     return dt_obj.weekday()
 
 
@@ -46,6 +47,48 @@ def isoweekday(date: Union[str, float, int]) -> int:
     Returns:
         weekday (int): day of week (from 1 to 7)
     """  # noqa: D402
-    date = str(int(date))
-    dt_obj = datetime.datetime.strptime(date, '%Y%m%d')
+    dt_obj = parse_to_date(date, '%Y%m%d')
     return dt_obj.isoweekday()
+
+
+class TimeDelta:
+    """TimeDelta class."""
+
+    def __init__(self, years=0, months=0, days=0):
+        """Construct TimeDelta object."""
+        self.years = years
+        self.months = months
+        self.days = days
+
+    def __add__(self, other):
+        """Add TimeDelta object to date/datetime-like value."""
+        fmt = guess_format(other)
+        dt_obj = parse_to_date(other, fmt)
+        dt_result = dt_obj + relativedelta(
+            years=self.years, months=self.months, days=self.days
+        )
+        return date_to_int(dt_result, fmt)
+
+    def __radd__(self, other):
+        """Add TimeDelta object to date/datetime-like value."""
+        return self + other
+
+
+def months(months):
+    """Return number of months to add to/subtract from date/datetime-like value."""
+    return TimeDelta(months=months)
+
+
+def years(years):
+    """Return number of years to add to/subtract from date/datetime-like value."""
+    return TimeDelta(years=years)
+
+
+def days(days):
+    """Return number of days to add to/subtract from date/datetime-like value."""
+    return TimeDelta(days=days)
+
+
+def timedelta(*, years=0, months=0, days=0):
+    """Return TimeDelta object to add to/subtract from date/datetime-like value."""
+    return TimeDelta(years=years, months=months, days=days)
