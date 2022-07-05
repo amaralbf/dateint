@@ -1,0 +1,24 @@
+# testing
+pytest
+coverage[toml]
+tox
+
+# pre-commit
+pre-commit
+
+# style and linting
+black==22.6.0
+flake8==3.9.2
+isort==5.10.1
+flake8-docstrings
+
+# type-checking
+mypy==0.961
+types-python-dateutil
+
+# docs
+mkdocs-material
+mkdocstrings[python]
+
+# jupyter
+ipykernel
