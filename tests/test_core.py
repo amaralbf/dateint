@@ -4,6 +4,7 @@ import pytest
 
 import dateint as di
 from dateint.config import get_date_format
+from dateint.exception import UnknownFormatError
 
 
 def test_today():
@@ -62,3 +63,8 @@ def test_isoweekday(date, exp_isoweekday):
 )
 def test_add_months(date, months, exp_date):
     assert date + di.months(months) == exp_date
+
+
+def test_add_months_to_invalid_value():
+    with pytest.raises(UnknownFormatError):
+        '2022/07/22' + di.months(1)

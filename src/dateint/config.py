@@ -1,7 +1,8 @@
 """Module for options and configuration."""
 
-_date_format = '%Y%m%d'
-_datetime_format = '%Y%m%d%H%M%S'
+DEFAULT_FORMAT = '%Y%m%d'
+
+DEFAULT_FORMAT_CANDIDATES = ['%Y%m%d', '%Y%m', '%Y%m%d%H%M%S', '%Y%m%d %H%M%S']
 
 
 def get_date_format() -> str:
@@ -10,13 +11,8 @@ def get_date_format() -> str:
     Returns:
         str: date format
     """
-    return _date_format
+    return DEFAULT_FORMAT
 
 
-def get_datetime_format():
-    """Return the datetime format according to configuration value.
-
-    Returns:
-        str: datetime format
-    """
-    return _datetime_format
+def get_format_candidates() -> list[str]:
+    return DEFAULT_FORMAT_CANDIDATES
