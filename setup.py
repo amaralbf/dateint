@@ -4,7 +4,7 @@ setup(
     name='dateint',
     version='0.1.0',
     description=(
-        'Library for arithmetic/manipulation of date/datetime formatted values.'
+        'Library for arithmetic/manipulation of date/datetime values in other formats.'
     ),
     long_description=None,
     author='Bruno Amaral',

@@ -6,7 +6,7 @@ from typing import Union
 from dateutil.relativedelta import relativedelta
 
 from .config import get_date_format
-from .convert import date_to_int, guess_format, parse_to_date
+from .convert import _from_date, _guess_format, _to_datetime
 
 
 def today() -> int:
@@ -16,7 +16,7 @@ def today() -> int:
     Returns:
         today (int): Current date as an integer, formatted as %Y%m%d.
     """
-    return date_to_int(datetime.date.today(), fmt=get_date_format())
+    return _from_date(datetime.date.today(), get_date_format(), int)  # type:ignore
 
 
 def weekday(date: Union[str, float, int]) -> int:
@@ -31,7 +31,7 @@ def weekday(date: Union[str, float, int]) -> int:
     Returns:
         weekday (int): day of week (from 0 to 6)
     """  # noqa: D402
-    dt_obj = parse_to_date(date, get_date_format())
+    dt_obj = _to_datetime(date, get_date_format())
     return dt_obj.weekday()
 
 
@@ -47,7 +47,7 @@ def isoweekday(date: Union[str, float, int]) -> int:
     Returns:
         weekday (int): day of week (from 1 to 7)
     """  # noqa: D402
-    dt_obj = parse_to_date(date, '%Y%m%d')
+    dt_obj = _to_datetime(date, '%Y%m%d')
     return dt_obj.isoweekday()
 
 
@@ -62,12 +62,12 @@ class TimeDelta:
 
     def __add__(self, other):
         """Add TimeDelta object to date/datetime-like value."""
-        fmt = guess_format(other)
-        dt_obj = parse_to_date(other, fmt)
+        fmt = _guess_format(other)
+        dt_obj = _to_datetime(other, fmt)
         dt_result = dt_obj + relativedelta(
             years=self.years, months=self.months, days=self.days
         )
-        return date_to_int(dt_result, fmt)
+        return _from_date(dt_result, fmt, type(other))
 
     def __radd__(self, other):
         """Add TimeDelta object to date/datetime-like value."""

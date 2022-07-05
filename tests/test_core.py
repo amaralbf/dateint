@@ -15,20 +15,23 @@ def test_today():
 
 
 @pytest.mark.parametrize(
-    ['date', 'exp_weekday'],
+    ['date'],
     [
-        (20220627, 0),
-        (20220628, 1),
-        (20220629, 2),
-        (20220630, 3),
-        (20220701, 4),
-        (20220702, 5),
-        (20220703, 6),
-        (20220710, 6),
+        (20220627,),
+        (20220628,),
+        (20220629,),
+        (20220630,),
+        (20220701,),
+        (20220702,),
+        (20220703,),
+        (20220710,),
+        (20220710,),
     ],
 )
-def test_weekday(date, exp_weekday):
-    assert di.weekday(date) == exp_weekday
+def test_weekday_of_date(date):
+    assert di.weekday(date) == datetime.date.weekday(
+        datetime.datetime.strptime(str(date), get_date_format())
+    )
 
 
 @pytest.mark.parametrize(
