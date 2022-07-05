@@ -1,5 +1,4 @@
----
-name: CI
+name: ci
 
 on:
   push:
@@ -30,3 +29,13 @@ jobs:
           python -m pip install --upgrade coverage[toml] virtualenv tox tox-gh-actions
       - name: "Run tox targets for ${{ matrix.python-version }}"
         run: "python -m tox"
+  pages:
+    name: "Docs - Github Pages"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - run: pip install mkdocs-material mkdocstrings[python]
+      - run: mkdocs gh-deploy --force

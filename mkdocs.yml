@@ -6,8 +6,6 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - API:
-    - dateint.core: api/core.md
 
 plugins:
   - search
