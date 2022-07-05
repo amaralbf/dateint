@@ -5,7 +5,7 @@ from typing import Union
 
 import pandas as pd
 
-DateRepresentationType = Union[float, int, str]
+DateRepresentationType = Union[float, int, str, pd.Series]
 
 
 def _guess_format(value: Union[int, str, float]):
@@ -30,6 +30,8 @@ def _from_date(
 
 
 def _to_datetime(value: DateRepresentationType, fmt: str) -> datetime.datetime:
+    if isinstance(value, pd.Series):
+        return pd.Series(pd.to_datetime(value, format=fmt))
     if isinstance(value, float):
         value = int(value)
     value_str = str(value)

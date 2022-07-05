@@ -138,5 +138,65 @@ def test_to_datetime(value, fmt, exp_result):
     assert _to_datetime(value, fmt) == exp_result
 
 
-# def test_to_datetime_with_pandas(value, fmt, exp_result):
-#     assert _to_datetime(value, fmt) == exp_result
+@pytest.mark.parametrize(
+    ['value', 'fmt', 'exp_result'],
+    [
+        (
+            pd.Series([20220705, 20220801]),
+            '%Y%m%d',
+            pd.Series([datetime.datetime(2022, 7, 5), datetime.datetime(2022, 8, 1)]),
+        ),
+        (
+            pd.Series([202207, 202208]),
+            '%Y%m',
+            pd.Series([datetime.datetime(2022, 7, 1), datetime.datetime(2022, 8, 1)]),
+        ),
+        (
+            pd.Series([202207.0, 202208.0]),
+            '%Y%m',
+            pd.Series([datetime.datetime(2022, 7, 1), datetime.datetime(2022, 8, 1)]),
+        ),
+        (
+            pd.Series(['202207', '202208']),
+            '%Y%m',
+            pd.Series([datetime.datetime(2022, 7, 1), datetime.datetime(2022, 8, 1)]),
+        ),
+        (
+            pd.Series(['05-07/2022', '01-08/2022']),
+            '%d-%m/%Y',
+            pd.Series([datetime.datetime(2022, 7, 5), datetime.datetime(2022, 8, 1)]),
+        ),
+        (
+            pd.Series([20220705235959, 20220801010203]),
+            '%Y%m%d%H%M%S',
+            pd.Series(
+                [
+                    datetime.datetime(2022, 7, 5, 23, 59, 59),
+                    datetime.datetime(2022, 8, 1, 1, 2, 3),
+                ]
+            ),
+        ),
+        (
+            pd.Series([20220705235959.0, 20220801010203.0]),
+            '%Y%m%d%H%M%S',
+            pd.Series(
+                [
+                    datetime.datetime(2022, 7, 5, 23, 59, 59),
+                    datetime.datetime(2022, 8, 1, 1, 2, 3),
+                ]
+            ),
+        ),
+        (
+            pd.Series(['20220705 235959', '20220801 010203']),
+            '%Y%m%d %H%M%S',
+            pd.Series(
+                [
+                    datetime.datetime(2022, 7, 5, 23, 59, 59),
+                    datetime.datetime(2022, 8, 1, 1, 2, 3),
+                ]
+            ),
+        ),
+    ],
+)
+def test_to_datetime_with_pandas(value, fmt, exp_result):
+    assert all(_to_datetime(value, fmt) == exp_result)
