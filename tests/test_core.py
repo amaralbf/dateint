@@ -1,6 +1,9 @@
 import datetime
 
 import pytest
+from dateutil.relativedelta import relativedelta
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
 import dateint as di
 from dateint.config import get_date_format
@@ -68,3 +71,16 @@ def test_add_months(date, months, exp_date):
 def test_add_months_to_invalid_value():
     with pytest.raises(UnknownFormatError):
         '2022/07/22' + di.months(1)
+
+
+@given(st.dates(min_value=datetime.date(1000, 1, 1)))
+@settings(max_examples=1000)
+def test_timedelta(date):
+    fmt = '%Y%m%d'
+    kwargs = {'years': 1, 'months': 1, 'days': 1}
+
+    print(date)
+    from_dateutil = (date + relativedelta(**kwargs)).strftime(fmt)
+    from_dateint = date.strftime(fmt) + di.timedelta(**kwargs)
+
+    assert from_dateutil == from_dateint
