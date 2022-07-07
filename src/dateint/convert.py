@@ -1,23 +1,15 @@
 """Module for date/datetime conversion."""
 
 import datetime
+from math import isclose
 from typing import Any, Union
 
 import pandas as pd
 
 from .config import get_format_candidates
-from .exception import UnknownFormatError
+from .exception import FloatFormatError, FormatError
 
 DateRepresentationType = Union[float, int, str, pd.Series]
-
-
-def _guess_format(value: Union[int, str, float]):
-    """Try to infer date/datetime format from value."""
-    date_str = str(int(value))
-    if len(date_str) == 6:
-        return '%Y%m'
-    elif len(date_str) == 8:
-        return '%Y%m%d'
 
 
 def _from_date(
@@ -29,7 +21,9 @@ def _from_date(
     elif isinstance(dt, (datetime.date, datetime.datetime)):
         fmtted = dt.strftime(fmt)
         return return_type(fmtted)
-    raise ValueError()
+    raise TypeError(
+        f'Type ({type(dt)}) of value ({dt}) is not valid for conversion from date'
+    )
 
 
 def _to_datetime(value: DateRepresentationType, fmt: str) -> datetime.datetime:
@@ -45,17 +39,28 @@ def _to_datetime(value: DateRepresentationType, fmt: str) -> datetime.datetime:
 def _first_matching_format(value: Any) -> str:
     original_value = value
     if isinstance(value, float):
+        frac = value % 1
+        if not isclose(frac, 0):
+            raise FloatFormatError(
+                'Float values with a non-zero decimal part are not accepted '
+                f'("{original_value}").'
+            )
         value = int(value)
     value = str(value)
 
+    value_length = len(value)
     candidates = get_format_candidates()
-    for fmt in candidates:
+    for fmt, expected_length in candidates:
         try:
+            if value_length != expected_length:
+                continue
             datetime.datetime.strptime(value, fmt)
             return fmt
         except ValueError:
             pass
-    raise UnknownFormatError(
+    raise FormatError(
         f'Value "{original_value}" does not match any of configured formats: '
-        f'{candidates}.'
+        f'{[c[0] for c in candidates]}.\n'
+        'Hint: to prevent ambiguity issues, if no format is explicitly specified by the'
+        ' user, all values (year, month, day, ...) must be zero-padded.'
     )

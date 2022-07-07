@@ -6,7 +6,7 @@ from typing import Union
 from dateutil.relativedelta import relativedelta
 
 from .config import get_date_format
-from .convert import _first_matching_format, _from_date, _guess_format, _to_datetime
+from .convert import _first_matching_format, _from_date, _to_datetime
 
 
 def today() -> int:
