@@ -1,6 +1,7 @@
 # testing
 pytest
 coverage[toml]
+hypothesis
 tox
 
 # pre-commit

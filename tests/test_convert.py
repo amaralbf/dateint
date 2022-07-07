@@ -3,7 +3,8 @@ import datetime
 import pandas as pd
 import pytest
 
-from dateint.convert import _from_date, _to_datetime
+from dateint.convert import _first_matching_format, _from_date, _to_datetime
+from dateint.exception import FloatFormatError, FormatError
 
 
 @pytest.mark.parametrize(
@@ -35,6 +36,12 @@ from dateint.convert import _from_date, _to_datetime
 )
 def test_from_date(dt, fmt, return_type, exp_result):
     assert _from_date(dt, fmt, return_type) == exp_result
+
+
+def test_from_date_with_invalid_type():
+    invalid_value = []
+    with pytest.raises(TypeError):
+        _from_date(dt=invalid_value, fmt='%Y%m%d', return_type=int)
 
 
 @pytest.mark.parametrize(
@@ -200,3 +207,37 @@ def test_to_datetime(value, fmt, exp_result):
 )
 def test_to_datetime_with_pandas(value, fmt, exp_result):
     assert all(_to_datetime(value, fmt) == exp_result)
+
+
+@pytest.mark.parametrize(
+    ['value', 'exp_result'],
+    [
+        (202211, '%Y%m'),
+        ('20220304', '%Y%m%d'),
+        (20220708, '%Y%m%d'),
+        (20221108.0, '%Y%m%d'),
+        (20221108235959, '%Y%m%d%H%M%S'),
+        (20221108235950.0, '%Y%m%d%H%M%S'),
+        ('20221108 235959', '%Y%m%d %H%M%S'),
+    ],
+)
+def test_first_matching_format(value, exp_result):
+    assert _first_matching_format(value) == exp_result
+
+
+def test_float_with_non_zero_decimal_part():
+    with pytest.raises(FloatFormatError):
+        _first_matching_format(20220707.1)
+
+
+@pytest.mark.parametrize(
+    ['invalid_value'],
+    [
+        (2022071,),
+        (202271,),
+        ('asdasd',),
+    ],
+)
+def test_invalid_format_input(invalid_value):
+    with pytest.raises(FormatError, match=str(invalid_value)):
+        _first_matching_format(invalid_value)

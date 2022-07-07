@@ -1,9 +1,13 @@
 import datetime
 
 import pytest
+from dateutil.relativedelta import relativedelta
+from hypothesis import given
+from hypothesis import strategies as st
 
 import dateint as di
 from dateint.config import get_date_format
+from dateint.exception import FormatError
 
 
 def test_today():
@@ -62,3 +66,63 @@ def test_isoweekday(date, exp_isoweekday):
 )
 def test_add_months(date, months, exp_date):
     assert date + di.months(months) == exp_date
+
+
+def test_add_months_to_invalid_value():
+    with pytest.raises(FormatError):
+        '2022/07/22' + di.months(1)
+
+
+@given(
+    st.dates(min_value=datetime.date(1200, 1, 1), max_value=datetime.date(9000, 1, 1)),
+    st.integers(-100, 100),
+    st.integers(-100, 100),
+    st.integers(-10000, 10000),
+)
+def test_timedelta(date, years, months, days):
+    fmt = '%Y%m%d'
+    kwargs = {'years': years, 'months': months, 'days': days}
+
+    from_dateutil = (date + relativedelta(**kwargs)).strftime(fmt)
+    from_dateint = date.strftime(fmt) + di.timedelta(**kwargs)
+
+    assert from_dateutil == from_dateint
+
+
+@given(
+    st.dates(min_value=datetime.date(1200, 1, 1), max_value=datetime.date(9000, 1, 1)),
+    st.integers(-100, 100),
+)
+def test_years(date, years):
+    fmt = '%Y%m%d'
+
+    from_dateutil = (date + relativedelta(years=years)).strftime(fmt)
+    from_dateint = date.strftime(fmt) + di.years(years)
+
+    assert from_dateutil == from_dateint
+
+
+@given(
+    st.dates(min_value=datetime.date(1200, 1, 1), max_value=datetime.date(9000, 1, 1)),
+    st.integers(-100, 100),
+)
+def test_months(date, months):
+    fmt = '%Y%m%d'
+
+    from_dateutil = (date + relativedelta(months=months)).strftime(fmt)
+    from_dateint = date.strftime(fmt) + di.months(months)
+
+    assert from_dateutil == from_dateint
+
+
+@given(
+    st.dates(min_value=datetime.date(1200, 1, 1), max_value=datetime.date(9000, 1, 1)),
+    st.integers(-1000, 1000),
+)
+def test_days(date, days):
+    fmt = '%Y%m%d'
+
+    from_dateutil = (date + relativedelta(days=days)).strftime(fmt)
+    from_dateint = date.strftime(fmt) + di.days(days)
+
+    assert from_dateutil == from_dateint

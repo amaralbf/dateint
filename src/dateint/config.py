@@ -1,7 +1,15 @@
 """Module for options and configuration."""
 
-_date_format = '%Y%m%d'
-_datetime_format = '%Y%m%d%H%M%S'
+from typing import List, Tuple
+
+DEFAULT_FORMAT = '%Y%m%d'
+
+DEFAULT_FORMAT_CANDIDATES = [
+    ('%Y%m', 6),
+    ('%Y%m%d', 8),
+    ('%Y%m%d%H%M%S', 14),
+    ('%Y%m%d %H%M%S', 15),
+]
 
 
 def get_date_format() -> str:
@@ -10,13 +18,15 @@ def get_date_format() -> str:
     Returns:
         str: date format
     """
-    return _date_format
+    return DEFAULT_FORMAT
 
 
-def get_datetime_format():
-    """Return the datetime format according to configuration value.
+def get_format_candidates() -> List[Tuple[str, int]]:
+    """Return a sequence of date format candidates to try parsing the input value.
 
     Returns:
-        str: datetime format
+        List[Tuple[str, int]]: sequence of date format candidates, begin the first
+            element of the tuple the format string, and the second the expected length
+            of the input value.
     """
-    return _datetime_format
+    return DEFAULT_FORMAT_CANDIDATES
