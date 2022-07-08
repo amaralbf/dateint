@@ -1,13 +1,15 @@
 import datetime
 
+import pandas as pd
 import pytest
-from dateutil.relativedelta import relativedelta
 from hypothesis import given
 from hypothesis import strategies as st
+from hypothesis.extra.pandas import range_indexes, series
 
 import dateint as di
 from dateint.config import get_date_format
-from dateint.exception import FormatError
+
+# from dateint.exception import FormatError
 
 
 def test_today():
@@ -56,73 +58,94 @@ def test_isoweekday(date, exp_isoweekday):
 
 
 @pytest.mark.parametrize(
-    ['date', 'months', 'exp_date'],
+    ['value', 'years', 'months', 'days', 'exp_result'],
     [
-        (202207, 5, 202212),
-        (20220702, 5, 20221202),
-        (20220731, 4, 20221130),
-        (20200229, 4, 20200629),
+        (
+            pd.Series([20220705, 20220801]),
+            1,
+            1,
+            1,
+            pd.Series([20230806, 20230902]),
+        ),
+        (
+            pd.Series([202207, 202208]),
+            1,
+            1,
+            0,
+            pd.Series([202308, 202309]),
+        ),
+        (
+            pd.Series([202207, 202208]),
+            1,
+            1,
+            1,
+            pd.Series([202308, 202309]),
+        ),
+        (
+            pd.Series([202207, 202208]),
+            1,
+            1,
+            32,
+            pd.Series([202309, 202310]),
+        ),
     ],
 )
-def test_add_months(date, months, exp_date):
-    assert date + di.months(months) == exp_date
+def test_add_with_pandas(value, years, months, days, exp_result):
+    assert di.add(value, years=years, months=months, days=days).equals(exp_result)
 
 
-def test_add_months_to_invalid_value():
-    with pytest.raises(FormatError):
-        '2022/07/22' + di.months(1)
-
-
-@given(
-    st.dates(min_value=datetime.date(1200, 1, 1), max_value=datetime.date(9000, 1, 1)),
-    st.integers(-100, 100),
-    st.integers(-100, 100),
-    st.integers(-10000, 10000),
+@pytest.mark.parametrize(
+    ['value', 'years', 'months', 'days', 'exp_result'],
+    [
+        (20220705, 1, 1, 1, 20230806),
+        (202207, 1, 1, 0, 202308),
+        (202207, 1, 1, 1, 202308),
+        (202207, 1, 1, 32, 202309),
+    ],
 )
-def test_timedelta(date, years, months, days):
-    fmt = '%Y%m%d'
-    kwargs = {'years': years, 'months': months, 'days': days}
-
-    from_dateutil = (date + relativedelta(**kwargs)).strftime(fmt)
-    from_dateint = date.strftime(fmt) + di.timedelta(**kwargs)
-
-    assert from_dateutil == from_dateint
+def test_add_with_scalar(value, years, months, days, exp_result):
+    result = di.add(value, years=years, months=months, days=days)
+    assert result == exp_result
+    assert type(result) == type(exp_result)
 
 
 @given(
-    st.dates(min_value=datetime.date(1200, 1, 1), max_value=datetime.date(9000, 1, 1)),
+    st.dates(min_value=datetime.date(1900, 1, 1), max_value=datetime.date(2100, 1, 1)),
     st.integers(-100, 100),
-)
-def test_years(date, years):
-    fmt = '%Y%m%d'
-
-    from_dateutil = (date + relativedelta(years=years)).strftime(fmt)
-    from_dateint = date.strftime(fmt) + di.years(years)
-
-    assert from_dateutil == from_dateint
-
-
-@given(
-    st.dates(min_value=datetime.date(1200, 1, 1), max_value=datetime.date(9000, 1, 1)),
     st.integers(-100, 100),
-)
-def test_months(date, months):
-    fmt = '%Y%m%d'
-
-    from_dateutil = (date + relativedelta(months=months)).strftime(fmt)
-    from_dateint = date.strftime(fmt) + di.months(months)
-
-    assert from_dateutil == from_dateint
-
-
-@given(
-    st.dates(min_value=datetime.date(1200, 1, 1), max_value=datetime.date(9000, 1, 1)),
     st.integers(-1000, 1000),
 )
-def test_days(date, days):
+def test_sub_is_inverse_add_with_scalar(date, years, months, days):
     fmt = '%Y%m%d'
+    date_as_str = date.strftime(fmt)
 
-    from_dateutil = (date + relativedelta(days=days)).strftime(fmt)
-    from_dateint = date.strftime(fmt) + di.days(days)
+    kwargs = {'years': years, 'months': months, 'days': days}
+    negative_kwargs = {'years': -years, 'months': -months, 'days': -days}
 
-    assert from_dateutil == from_dateint
+    add_result = di.add(date_as_str, **kwargs)
+    sub_result = di.sub(date_as_str, **negative_kwargs)
+    assert add_result == sub_result
+    assert type(add_result) == type(sub_result)
+
+
+@given(
+    series(
+        elements=st.dates(
+            min_value=datetime.date(1900, 1, 1), max_value=datetime.date(2100, 1, 1)
+        ),
+        index=range_indexes(1, 10),
+    ),
+    st.integers(-100, 100),
+    st.integers(-100, 100),
+    st.integers(-1000, 1000),
+)
+def test_sub_is_inverse_add_with_pandas(dates, years, months, days):
+    fmt = '%Y%m%d'
+    date_as_str = pd.to_datetime(dates).dt.strftime(fmt)
+
+    kwargs = {'years': years, 'months': months, 'days': days}
+    negative_kwargs = {'years': -years, 'months': -months, 'days': -days}
+
+    add_result = di.add(date_as_str, **kwargs)
+    sub_result = di.sub(date_as_str, **negative_kwargs)
+    assert add_result.equals(sub_result)

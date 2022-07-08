@@ -1,12 +1,13 @@
 """Core module of dateint."""
-
 import datetime
+from functools import wraps
 from typing import Union
 
+import pandas as pd
 from dateutil.relativedelta import relativedelta
 
 from .config import get_date_format
-from .convert import _first_matching_format, _from_date, _to_datetime
+from .convert import _first_matching_format, _from_date, _get_return_type, _to_datetime
 
 
 def today() -> int:
@@ -51,44 +52,56 @@ def isoweekday(date: Union[str, float, int]) -> int:
     return dt_obj.isoweekday()
 
 
-class TimeDelta:
-    """TimeDelta class."""
+def conversion(f):
+    """Decorator that wraps the date/datetime operation."""
 
-    def __init__(self, years=0, months=0, days=0):
-        """Construct TimeDelta object."""
-        self.years = years
-        self.months = months
-        self.days = days
+    @wraps(f)
+    def wrapper(value, *args, **kwargs):
+        fmt = _first_matching_format(value)
+        dt_obj = _to_datetime(value, fmt)
+        dt_result = f(dt_obj, *args, **kwargs)
+        return_type = _get_return_type(value)
+        return _from_date(dt_result, fmt, return_type)
 
-    def __add__(self, other):
-        """Add TimeDelta object to date/datetime-like value."""
-        fmt = _first_matching_format(other)
-        dt_obj = _to_datetime(other, fmt)
-        dt_result = dt_obj + relativedelta(
-            years=self.years, months=self.months, days=self.days
-        )
-        return _from_date(dt_result, fmt, type(other))
-
-    def __radd__(self, other):
-        """Add TimeDelta object to date/datetime-like value."""
-        return self + other
+    return wrapper
 
 
-def months(months):
-    """Return number of months to add to/subtract from date/datetime-like value."""
-    return TimeDelta(months=months)
+@conversion
+def add(
+    value: Union[pd.Series, datetime.date, datetime.datetime],
+    *,
+    years: int = 0,
+    months: int = 0,
+    days: int = 0
+):
+    """Add some time interval (years, months, days, ...) to a datetime-like value."""
+    if isinstance(value, pd.Series):
+        return value + pd.offsets.DateOffset(years=years, months=months, days=days)
+    else:
+        return value + relativedelta(years=years, months=months, days=days)
 
 
-def years(years):
-    """Return number of years to add to/subtract from date/datetime-like value."""
-    return TimeDelta(years=years)
+@conversion
+def sub(
+    value: Union[pd.Series, datetime.date, datetime.datetime],
+    *,
+    years: int = 0,
+    months: int = 0,
+    days: int = 0
+):
+    """
+    Subtract some time interval (years, months, days, ...) to a datetime-like value.
 
+    Args:
+        value (Union[pd.Series, datetime.date, datetime.datetime]): _description_
+        years (int, optional): _description_. Defaults to 0.
+        months (int, optional): _description_. Defaults to 0.
+        days (int, optional): _description_. Defaults to 0.
 
-def days(days):
-    """Return number of days to add to/subtract from date/datetime-like value."""
-    return TimeDelta(days=days)
-
-
-def timedelta(*, years=0, months=0, days=0):
-    """Return TimeDelta object to add to/subtract from date/datetime-like value."""
-    return TimeDelta(years=years, months=months, days=days)
+    Returns:
+        _type_: _description_
+    """
+    if isinstance(value, pd.Series):
+        return value - pd.offsets.DateOffset(years=years, months=months, days=days)
+    else:
+        return value - relativedelta(years=years, months=months, days=days)

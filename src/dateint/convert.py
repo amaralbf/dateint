@@ -2,7 +2,7 @@
 
 import datetime
 from math import isclose
-from typing import Any, Union
+from typing import Union
 
 import pandas as pd
 
@@ -36,31 +36,68 @@ def _to_datetime(value: DateRepresentationType, fmt: str) -> datetime.datetime:
     return dt
 
 
-def _first_matching_format(value: Any) -> str:
-    original_value = value
-    if isinstance(value, float):
-        frac = value % 1
-        if not isclose(frac, 0):
-            raise FloatFormatError(
-                'Float values with a non-zero decimal part are not accepted '
-                f'("{original_value}").'
-            )
-        value = int(value)
-    value = str(value)
+def _first_matching_format(value: DateRepresentationType) -> str:
+    if isinstance(value, pd.Series):
+        first_value = value.iloc[0]
+        original_value = first_value
+        if isinstance(first_value, float):
+            frac = first_value % 1
+            if not isclose(frac, 0):
+                raise FloatFormatError(
+                    'Float values with a non-zero decimal part are not accepted '
+                    f'(first element of series: "{original_value}").'
+                )
+            first_value = int(first_value)
+        first_value = str(first_value)
 
-    value_length = len(value)
-    candidates = get_format_candidates()
-    for fmt, expected_length in candidates:
-        try:
-            if value_length != expected_length:
-                continue
-            datetime.datetime.strptime(value, fmt)
-            return fmt
-        except ValueError:
-            pass
-    raise FormatError(
-        f'Value "{original_value}" does not match any of configured formats: '
-        f'{[c[0] for c in candidates]}.\n'
-        'Hint: to prevent ambiguity issues, if no format is explicitly specified by the'
-        ' user, all values (year, month, day, ...) must be zero-padded.'
-    )
+        value_length = len(first_value)
+        candidates = get_format_candidates()
+        for fmt, expected_length in candidates:
+            try:
+                if value_length != expected_length:
+                    continue
+                datetime.datetime.strptime(first_value, fmt)
+                return fmt
+            except ValueError:
+                pass
+        raise FormatError(
+            f'First value "{original_value}" does not match any of configured formats: '
+            f'{[c[0] for c in candidates]}.\n'
+            'Hint: to prevent ambiguity issues, if no format is explicitly specified by'
+            ' the user, all values (year, month, day, ...) must be zero-padded.'
+        )
+    else:
+        original_value = value
+        if isinstance(value, float):
+            frac = value % 1
+            if not isclose(frac, 0):
+                raise FloatFormatError(
+                    'Float values with a non-zero decimal part are not accepted '
+                    f'({original_value}).'
+                )
+            value = int(value)
+        value = str(value)
+
+        value_length = len(value)
+        candidates = get_format_candidates()
+        for fmt, expected_length in candidates:
+            try:
+                if value_length != expected_length:
+                    continue
+                datetime.datetime.strptime(value, fmt)
+                return fmt
+            except ValueError:
+                pass
+        raise FormatError(
+            f'First value "{original_value}" does not match any of configured formats: '
+            f'{[c[0] for c in candidates]}.\n'
+            'Hint: to prevent ambiguity issues, if no format is explicitly specified by'
+            ' the user, all values (year, month, day, ...) must be zero-padded.'
+        )
+
+
+def _get_return_type(value):
+    if isinstance(value, pd.Series):
+        return value.dtype
+    else:
+        return type(value)

@@ -1,8 +1,32 @@
 site_name: dateint
+site_url: https://amaralbf.github.io/dateint/
+repo_url: https://github.com/amaralbf/dateint
+repo_name: amaralbf/dateint
+site_author: Bruno Amaral
+
 theme:
   name: material
+  palette:
+
+    # Palette toggle for light mode
+    - scheme: default
+      toggle:
+        icon: material/lightbulb
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - scheme: slate
+      toggle:
+        icon: material/lightbulb-outline
+        name: Switch to light mode
+
 markdown_extensions:
   - admonition
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
 
 nav:
   - Home: index.md
@@ -17,3 +41,6 @@ plugins:
             docstring_style: google
             show_root_toc_entry: false
             show_source: false
+
+extra_css:
+  - css/style.css
