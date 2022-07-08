@@ -119,7 +119,9 @@ def test_from_date_with_invalid_type():
     ],
 )
 def test_from_date_with_pandas(dt, fmt, return_type, exp_result):
-    assert all(_from_date(dt, fmt, return_type) == exp_result)
+    result = _from_date(dt, fmt, return_type)
+    assert all(result == exp_result)
+    assert result.dtype == exp_result.dtype
 
 
 @pytest.mark.parametrize(
@@ -241,3 +243,8 @@ def test_float_with_non_zero_decimal_part():
 def test_invalid_format_input(invalid_value):
     with pytest.raises(FormatError, match=str(invalid_value)):
         _first_matching_format(invalid_value)
+
+
+# def test_get_return_type():
+#     return_type = _get_return_type(pd.Series([202201]))
+#     x = pd.Series(['202201']).astype(return_type)
