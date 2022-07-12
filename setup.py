@@ -9,7 +9,7 @@ def README():
 
 setup(
     name='dateint',
-    version='0.1.0.1',
+    version='0.1.0',
     author='Bruno Amaral',
     author_email='amaralbf@gmail.com',
     url='https://github.com/amaralbf/dateint',
