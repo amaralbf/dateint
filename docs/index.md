@@ -1,9 +1,11 @@
 # Dateint
 
 [![ci-status](https://github.com/amaralbf/dateint/workflows/ci/badge.svg?event=push&branch=main)](https://github.com/amaralbf/dateint/actions?query=workflow%3Aci+event%3Apush+branch%3Amain)
+[![Coverage](https://img.shields.io/codecov/c/github/amaralbf/dateint)](https://codecov.io/github/amaralbf/dateint)
 ![PYPI](https://img.shields.io/pypi/pyversions/dateint.svg?color=%2334D058)
 [![MIT License](https://img.shields.io/badge/license-MIT-007EC7.svg?style=flat-square)](/LICENSE)
 [![Code Style Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black/)
+
 
 It's very common to store date/datetimes as **integers** or **strings** using formats
 such as `YYYYmmdd` or `YYYYmm`. In python, to perform date/datetime arithmetic on those
