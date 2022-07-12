@@ -1,15 +1,21 @@
 from setuptools import setup
 
+
+def README():
+    with open('README.md', 'rt', encoding='utf-8') as f:
+        readme = f.read()
+    return readme
+
+
 setup(
     name='dateint',
     version='0.1.0',
     author='Bruno Amaral',
     author_email='amaralbf@gmail.com',
-    url='',
-    description=(
-        'Library for arithmetic/manipulation of date/datetime values in other formats.'
-    ),
-    long_description=None,
+    url='https://github.com/amaralbf/dateint',
+    description=('Helper library for manipulation of formatted date/datetime values.'),
+    long_description=README(),
+    long_description_content_type='text/markdown',
     package_dir={'': 'src'},
     packages=['dateint'],
     python_requires='>=3.7,<4.0',
