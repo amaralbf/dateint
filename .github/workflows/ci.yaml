@@ -30,4 +30,9 @@ jobs:
       - name: "Run tox targets for ${{ matrix.python-version }}"
         run: "python -m tox"
       - name: Upload coverage
-        uses: codecov/codecov-action@v2
+      - uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.xml
+          flags: "Python ${{ matrix.python-version }}"
+          fail_ci_if_error: true
+          verbose: true
