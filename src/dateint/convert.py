@@ -1,6 +1,7 @@
 """Module for date/datetime conversion."""
 
 import datetime
+from functools import wraps
 from math import isclose
 from typing import Union
 
@@ -101,3 +102,17 @@ def _get_return_type(value):
         return value.dtype
     else:
         return type(value)
+
+
+def conversion(f):
+    """Decorator that wraps the date/datetime operation."""
+
+    @wraps(f)
+    def wrapper(value, *args, **kwargs):
+        fmt = _first_matching_format(value)
+        dt_obj = _to_datetime(value, fmt)
+        dt_result = f(dt_obj, *args, **kwargs)
+        return_type = _get_return_type(value)
+        return _from_date(dt_result, fmt, return_type)
+
+    return wrapper
