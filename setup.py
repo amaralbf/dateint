@@ -9,10 +9,11 @@ def README():
 
 setup(
     name='dateint',
-    version='0.1.0',
+    version='0.1.0.1',
     author='Bruno Amaral',
     author_email='amaralbf@gmail.com',
     url='https://github.com/amaralbf/dateint',
+    project_urls={'Documentation': 'https://amaralbf.github.io/dateint/'},
     description=('Helper library for manipulation of formatted date/datetime values.'),
     long_description=README(),
     long_description_content_type='text/markdown',
