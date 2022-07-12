@@ -5,16 +5,16 @@ on:
   pull_request:
     branches:
       - main
-      - 'releases/**'
+      - '*.*.*'
 
 jobs:
-  tox:
-    name: "Python ${{ matrix.python-version }}"
+  test_and_coverage:
+    name: "Test and Coverage (Python ${{ matrix.python-version }})"
     runs-on: "ubuntu-latest"
 
     strategy:
       matrix:
-        python-version: ["3.7", " 3.8", " 3.9"]
+        python-version: ["3.9"]
 
     steps:
       - uses: "actions/checkout@v2"
@@ -26,6 +26,32 @@ jobs:
           python -VV
           python -m site
           python -m pip install --upgrade pip setuptools wheel
-          python -m pip install --upgrade coverage[toml] virtualenv tox tox-gh-actions
+          python -m pip install coverage[toml] tox tox-gh-actions
+      - name: "Run tox targets for ${{ matrix.python-version }}"
+        run: "python -m tox"
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          fail_ci_if_error: true
+          verbose: true
+  run_tests_on_other_versions:
+    name: "Tests Only (Python ${{ matrix.python-version }})"
+    runs-on: "ubuntu-latest"
+
+    strategy:
+      matrix:
+        python-version: ["3.7", "3.8",]
+
+    steps:
+      - uses: "actions/checkout@v2"
+      - uses: "actions/setup-python@v2"
+        with:
+          python-version: "${{ matrix.python-version }}"
+      - name: "Install dependencies"
+        run: |
+          python -VV
+          python -m site
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install tox tox-gh-actions
       - name: "Run tox targets for ${{ matrix.python-version }}"
         run: "python -m tox"

@@ -1,4 +1,4 @@
-"""dateint is a library for manipulation of date/time values formatted as integers."""
+"""Helper library for manipulation of formatted date/datetime values."""
 
 from .core import add, isoweekday, sub, today, weekday
 

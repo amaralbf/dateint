@@ -7,18 +7,23 @@ site_author: Bruno Amaral
 theme:
   name: material
   palette:
-
     # Palette toggle for light mode
     - scheme: default
+      primary: teal
+      accent: teal
       toggle:
         icon: material/lightbulb
         name: Switch to dark mode
 
     # Palette toggle for dark mode
     - scheme: slate
+      primary: teal
+      accent: teal
       toggle:
         icon: material/lightbulb-outline
         name: Switch to light mode
+  icon:
+    logo: material/calendar-month
 
 markdown_extensions:
   - admonition
@@ -30,17 +35,20 @@ markdown_extensions:
 
 nav:
   - Home: index.md
+  - API: api.md
+  - Release Notes: release_notes.md
 
 plugins:
   - search
   - mkdocstrings:
-      custom_templates: templates
+      default_handler: python
       handlers:
         python:
           options:
             docstring_style: google
             show_root_toc_entry: false
             show_source: false
+            show_root_heading: true
 
 extra_css:
   - css/style.css

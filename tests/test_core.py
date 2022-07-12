@@ -34,10 +34,25 @@ def test_today():
         (20220710,),
     ],
 )
-def test_weekday_of_date(date):
+def test_weekday(date):
     assert di.weekday(date) == datetime.date.weekday(
         datetime.datetime.strptime(str(date), get_date_format())
     )
+
+
+def test_weekday_with_pandas():
+    dates = pd.Series(
+        [
+            20220103,
+            20220104,
+            20220105,
+            20220106,
+            20220107,
+            20220108,
+            20220109,
+        ]
+    )
+    assert all(di.weekday(dates) == pd.Series([0, 1, 2, 3, 4, 5, 6]))
 
 
 @pytest.mark.parametrize(
@@ -55,6 +70,21 @@ def test_weekday_of_date(date):
 )
 def test_isoweekday(date, exp_isoweekday):
     assert di.isoweekday(date) == exp_isoweekday
+
+
+def test_isoweekday_with_pandas():
+    dates = pd.Series(
+        [
+            20220103,
+            20220104,
+            20220105,
+            20220106,
+            20220107,
+            20220108,
+            20220109,
+        ]
+    )
+    assert all(di.isoweekday(dates) == pd.Series([1, 2, 3, 4, 5, 6, 7]))
 
 
 @pytest.mark.parametrize(
