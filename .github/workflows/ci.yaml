@@ -9,7 +9,7 @@ on:
 
 jobs:
   test_and_coverage:
-    name: "Python ${{ matrix.python-version }}"
+    name: "Test and Coverage (Python ${{ matrix.python-version }})"
     runs-on: "ubuntu-latest"
 
     strategy:
@@ -35,7 +35,7 @@ jobs:
           fail_ci_if_error: true
           verbose: true
   run_tests_on_other_versions:
-    name: "Python ${{ matrix.python-version }}"
+    name: "Tests Only (Python ${{ matrix.python-version }})"
     runs-on: "ubuntu-latest"
 
     strategy:
