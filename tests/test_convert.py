@@ -227,9 +227,30 @@ def test_first_matching_format(value, exp_result):
     assert _first_matching_format(value) == exp_result
 
 
+@pytest.mark.parametrize(
+    ['value', 'exp_result'],
+    [
+        (pd.Series([202211, 202211]), '%Y%m'),
+        (pd.Series(['20220304', '20220304']), '%Y%m%d'),
+        (pd.Series([20220708, 20220708]), '%Y%m%d'),
+        (pd.Series([20221108.0, 20221108.0]), '%Y%m%d'),
+        (pd.Series([20221108235959, 20221108235959]), '%Y%m%d%H%M%S'),
+        (pd.Series([20221108235950.0, 20221108235950.0]), '%Y%m%d%H%M%S'),
+        (pd.Series(['20221108 235959', '20221108 235959']), '%Y%m%d %H%M%S'),
+    ],
+)
+def test_first_matching_format_with_pandas(value, exp_result):
+    assert _first_matching_format(value) == exp_result
+
+
 def test_float_with_non_zero_decimal_part():
     with pytest.raises(FloatFormatError):
         _first_matching_format(20220707.1)
+
+
+def test_series_with_float_with_non_zero_decimal_part():
+    with pytest.raises(FloatFormatError):
+        _first_matching_format(pd.Series([20220707.1]))
 
 
 @pytest.mark.parametrize(
@@ -245,6 +266,13 @@ def test_invalid_format_input(invalid_value):
         _first_matching_format(invalid_value)
 
 
-# def test_get_return_type():
-#     return_type = _get_return_type(pd.Series([202201]))
-#     x = pd.Series(['202201']).astype(return_type)
+@pytest.mark.parametrize(
+    ['invalid_value'],
+    [
+        (pd.Series([2022071, 2022071]),),
+        (pd.Series(['asdasd', 'asdasd']),),
+    ],
+)
+def test_invalid_format_input_with_pandas(invalid_value):
+    with pytest.raises(FormatError, match=str(invalid_value.iloc[0])):
+        _first_matching_format(invalid_value)
