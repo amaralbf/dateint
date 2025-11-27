@@ -15,5 +15,5 @@ jobs:
       - name: Install the project
         run: uv sync --locked --dev
       - name: Install mkdocs
-        run: uv tool install mkdocs --with mkdocstrings[python]
+        run: uv tool install mkdocs-material --with mkdocstrings[python]
       - run: mkdocs gh-deploy --force
