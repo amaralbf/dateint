@@ -1,4 +1,5 @@
 """Core module of dateint."""
+
 import datetime
 from typing import Union
 

@@ -2,13 +2,13 @@
 
 from typing import List, Tuple
 
-DEFAULT_FORMAT = '%Y%m%d'
+DEFAULT_FORMAT = "%Y%m%d"
 
 DEFAULT_FORMAT_CANDIDATES = [
-    ('%Y%m', 6),
-    ('%Y%m%d', 8),
-    ('%Y%m%d%H%M%S', 14),
-    ('%Y%m%d %H%M%S', 15),
+    ("%Y%m", 6),
+    ("%Y%m%d", 8),
+    ("%Y%m%d%H%M%S", 14),
+    ("%Y%m%d %H%M%S", 15),
 ]
 
 

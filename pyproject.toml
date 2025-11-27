@@ -1,9 +1,41 @@
-[tool.black]
-line-length = 88
-skip-string-normalization = true
+[project]
+name = "dateint"
+version = "0.1.1"
+description = "Helper library for manipulation of formatted date/datetime values."
+readme = "README.md"
+authors = [
+    { name = "Bruno Amaral", email = "amaralbf@gmail.com" }
+]
+requires-python = ">=3.9"
+dependencies = [
+    "pandas",
+    "python-dateutil",
+]
 
-[tool.isort]
-profile = 'black'
+[dependency-groups]
+dev = [
+    {include-group = "docs"},
+    {include-group = "test"},
+    {include-group = "typing"},
+    "ipykernel",
+    "pre-commit"
+]
+
+docs = [
+    "mkdocs-material",
+    "mkdocstrings[python]"
+]
+
+test = [
+    "pytest",
+    "coverage[toml]",
+    "hypothesis[pandas]"
+]
+
+typing = [
+    "mypy",
+    "types-python-dateutil"
+]
 
 [tool.coverage.run]
 branch = true
@@ -11,8 +43,9 @@ parallel = true
 source = ["dateint"]
 command_line = "-m pytest tests"
 
+# Exibe no relatório de cobertura o pacote em src/ e não dentro de .tox/
 [tool.coverage.paths]
-source = ["src", ".tox/*/site-packages"]
+source = ["src", ".tox/**/site-packages"]
 
 [tool.coverage.report]
 show_missing = true
@@ -20,6 +53,9 @@ show_missing = true
 [tool.mypy]
 ignore_missing_imports = true
 
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["uv_build>=0.8.15,<0.9.0"]
+build-backend = "uv_build"
