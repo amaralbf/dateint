@@ -21,7 +21,7 @@ def test_today():
 
 
 @pytest.mark.parametrize(
-    ['date'],
+    ["date"],
     [
         (20220627,),
         (20220628,),
@@ -56,7 +56,7 @@ def test_weekday_with_pandas():
 
 
 @pytest.mark.parametrize(
-    ['date', 'exp_isoweekday'],
+    ["date", "exp_isoweekday"],
     [
         (20220627, 1),
         (20220628, 2),
@@ -88,7 +88,7 @@ def test_isoweekday_with_pandas():
 
 
 @pytest.mark.parametrize(
-    ['value', 'years', 'months', 'days', 'exp_result'],
+    ["value", "years", "months", "days", "exp_result"],
     [
         (
             pd.Series([20220705, 20220801]),
@@ -125,7 +125,7 @@ def test_add_with_pandas(value, years, months, days, exp_result):
 
 
 @pytest.mark.parametrize(
-    ['value', 'years', 'months', 'days', 'exp_result'],
+    ["value", "years", "months", "days", "exp_result"],
     [
         (20220705, 1, 1, 1, 20230806),
         (202207, 1, 1, 0, 202308),
@@ -136,7 +136,7 @@ def test_add_with_pandas(value, years, months, days, exp_result):
 def test_add_with_scalar(value, years, months, days, exp_result):
     result = di.add(value, years=years, months=months, days=days)
     assert result == exp_result
-    assert type(result) == type(exp_result)
+    assert type(result) is type(exp_result)
 
 
 @given(
@@ -146,16 +146,16 @@ def test_add_with_scalar(value, years, months, days, exp_result):
     st.integers(-1000, 1000),
 )
 def test_sub_is_inverse_add_with_scalar(date, years, months, days):
-    fmt = '%Y%m%d'
+    fmt = "%Y%m%d"
     date_as_str = date.strftime(fmt)
 
-    kwargs = {'years': years, 'months': months, 'days': days}
-    negative_kwargs = {'years': -years, 'months': -months, 'days': -days}
+    kwargs = {"years": years, "months": months, "days": days}
+    negative_kwargs = {"years": -years, "months": -months, "days": -days}
 
     add_result = di.add(date_as_str, **kwargs)
     sub_result = di.sub(date_as_str, **negative_kwargs)
     assert add_result == sub_result
-    assert type(add_result) == type(sub_result)
+    assert type(add_result) is type(sub_result)
 
 
 @given(
@@ -170,11 +170,11 @@ def test_sub_is_inverse_add_with_scalar(date, years, months, days):
     st.integers(-1000, 1000),
 )
 def test_sub_is_inverse_add_with_pandas(dates, years, months, days):
-    fmt = '%Y%m%d'
+    fmt = "%Y%m%d"
     date_as_str = pd.to_datetime(dates).dt.strftime(fmt)
 
-    kwargs = {'years': years, 'months': months, 'days': days}
-    negative_kwargs = {'years': -years, 'months': -months, 'days': -days}
+    kwargs = {"years": years, "months": months, "days": days}
+    negative_kwargs = {"years": -years, "months": -months, "days": -days}
 
     add_result = di.add(date_as_str, **kwargs)
     sub_result = di.sub(date_as_str, **negative_kwargs)

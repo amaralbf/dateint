@@ -23,7 +23,7 @@ def _from_date(
         fmtted = dt.strftime(fmt)
         return return_type(fmtted)
     raise TypeError(
-        f'Type ({type(dt)}) of value ({dt}) is not valid for conversion from date'
+        f"Type ({type(dt)}) of value ({dt}) is not valid for conversion from date"
     )
 
 
@@ -45,7 +45,7 @@ def _first_matching_format(value: DateRepresentationType) -> str:
             frac = first_value % 1
             if not isclose(frac, 0):
                 raise FloatFormatError(
-                    'Float values with a non-zero decimal part are not accepted '
+                    "Float values with a non-zero decimal part are not accepted "
                     f'(first element of series: "{original_value}").'
                 )
             first_value = int(first_value)
@@ -63,9 +63,9 @@ def _first_matching_format(value: DateRepresentationType) -> str:
                 pass
         raise FormatError(
             f'First value "{original_value}" does not match any of configured formats: '
-            f'{[c[0] for c in candidates]}.\n'
-            'Hint: to prevent ambiguity issues, if no format is explicitly specified by'
-            ' the user, all values (year, month, day, ...) must be zero-padded.'
+            f"{[c[0] for c in candidates]}.\n"
+            "Hint: to prevent ambiguity issues, if no format is explicitly specified by"
+            " the user, all values (year, month, day, ...) must be zero-padded."
         )
     else:
         original_value = value
@@ -73,8 +73,8 @@ def _first_matching_format(value: DateRepresentationType) -> str:
             frac = value % 1
             if not isclose(frac, 0):
                 raise FloatFormatError(
-                    'Float values with a non-zero decimal part are not accepted '
-                    f'({original_value}).'
+                    "Float values with a non-zero decimal part are not accepted "
+                    f"({original_value})."
                 )
             value = int(value)
         value = str(value)
@@ -91,9 +91,9 @@ def _first_matching_format(value: DateRepresentationType) -> str:
                 pass
         raise FormatError(
             f'First value "{original_value}" does not match any of configured formats: '
-            f'{[c[0] for c in candidates]}.\n'
-            'Hint: to prevent ambiguity issues, if no format is explicitly specified by'
-            ' the user, all values (year, month, day, ...) must be zero-padded.'
+            f"{[c[0] for c in candidates]}.\n"
+            "Hint: to prevent ambiguity issues, if no format is explicitly specified by"
+            " the user, all values (year, month, day, ...) must be zero-padded."
         )
 
 

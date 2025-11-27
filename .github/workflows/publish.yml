@@ -3,34 +3,33 @@ name: Release
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - "v*.*.*"
 
 jobs:
   release:
-    name: Publish to PYPI
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+    permissions:
+      id-token: write
+      contents: read
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.9"
-
-      - name: "Install dependencies"
+      - name: Check if on specific branch and exit if not
+        if: ${{ !contains(github.ref_name, 'main') }}
         run: |
-          python -VV
-          python -m site
-          python -m pip install --upgrade pip setuptools wheel
-          python -m pip install build
-
-      - name: Build package
-        run: "python -m build"
-
-      - name: Publish package
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
+          echo "This workflow is intended for tags on the 'main' branch only."
+          exit 1
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+      - name: Install Python 3.13
+        run: uv python install 3.13
+      - name: Build
+        run: uv build
+      - name: Smoke test (wheel)
+        run: uv run --isolated --no-project --with dist/*.whl tests/smoke_test.py
+      - name: Smoke test (source distribution)
+        run: uv run --isolated --no-project --with dist/*.tar.gz tests/smoke_test.py
+      # - name: Publish
+      #   run: uv publish
