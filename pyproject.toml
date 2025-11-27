@@ -1,6 +1,6 @@
 [project]
 name = "dateint"
-version = "0.1.1"
+version = "0.2.0"
 description = "Helper library for manipulation of formatted date/datetime values."
 readme = "README.md"
 authors = [

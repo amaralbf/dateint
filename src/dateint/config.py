@@ -30,5 +30,3 @@ def get_format_candidates() -> List[Tuple[str, int]]:
             of the input value.
     """
     return DEFAULT_FORMAT_CANDIDATES
-
-1///
