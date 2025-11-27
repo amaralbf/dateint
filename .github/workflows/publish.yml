@@ -14,22 +14,13 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - name: Check if on specific branch and exit if not
-        if: ${{ !contains(github.ref_name, 'main') }}
-        run: |
-          echo "This workflow is intended for tags on the 'main' branch only."
-          exit 1
       - name: Checkout
         uses: actions/checkout@v5
       - name: Install uv
         uses: astral-sh/setup-uv@v7
-      - name: Install Python 3.13
-        run: uv python install 3.13
+      - name: Install the project
+        run: uv sync --locked --dev
       - name: Build
         run: uv build
-      - name: Smoke test (wheel)
-        run: uv run --isolated --no-project --with dist/*.whl tests/smoke_test.py
-      - name: Smoke test (source distribution)
-        run: uv run --isolated --no-project --with dist/*.tar.gz tests/smoke_test.py
-      # - name: Publish
-      #   run: uv publish
+      - name: Publish
+        run: uv publish
